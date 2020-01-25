@@ -1,0 +1,12 @@
+eclipse.preferences.version=1
+encoding//integrationTests/swaggerClient/__init__.py=utf-8
+encoding//integrationTests/swaggerClient/api/default_api.py=utf-8
+encoding//integrationTests/swaggerClient/api_client.py=utf-8
+encoding//integrationTests/swaggerClient/configuration.py=utf-8
+encoding//integrationTests/swaggerClient/models/__init__.py=utf-8
+encoding//integrationTests/swaggerClient/rest.py=utf-8
+encoding//queryPreferenceProvider/swaggerClient/__init__.py=utf-8
+encoding//queryPreferenceProvider/swaggerClient/api/default_api.py=utf-8
+encoding//queryPreferenceProvider/swaggerClient/api_client.py=utf-8
+encoding//queryPreferenceProvider/swaggerClient/configuration.py=utf-8
+encoding//queryPreferenceProvider/swaggerClient/rest.py=utf-8
