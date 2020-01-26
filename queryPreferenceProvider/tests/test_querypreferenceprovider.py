@@ -18,18 +18,6 @@ class MockLogger(object):
         Mock log method - does nothing
         '''
         pass
-    
-class MockAPIInstance(object):
-    '''
-    Mock API instance class
-    Just provides the method calls
-    '''
-    def get_preferences(self, _):
-        '''
-        Mock get_preferences method
-        return invalid JSON
-        '''
-        return 'NOT JSON'
 
 class MockQueryPreferenceProvider(QueryPreferenceProvider):
     '''
@@ -39,7 +27,6 @@ class MockQueryPreferenceProvider(QueryPreferenceProvider):
     
     def __init__(self):
         self.logger = MockLogger()
-        self.api_instance = MockAPIInstance()
     
 
 
@@ -47,23 +34,23 @@ class TestQueryPreferenceProvider(unittest.TestCase):
     '''
     Class containing tests for QueryPreferenceProvider
     '''
-
-    def testGetPersonPreferences(self):
+        
+    def testProcessReturnValue(self):
         '''
-        Test that the getPersonPreferences method gives the correct answer
-        when invalid json is returned from the PreferenceProvider API
+        Test that the _processReturnValue method gives the corrent answer
         '''
         # given
         expectedValue = json.loads('{"patientPreference": "NONE", "newId": null}')
         
         # when
         mockQueryPreferenceProvider = MockQueryPreferenceProvider()
-        actualValue = mockQueryPreferenceProvider.getPersonPreferences('0099', {})
+        actualValue = mockQueryPreferenceProvider._processReturnValue('NOT JSON',
+                                                                      {})
         
         # then
         self.assertEqual(expectedValue,
                          actualValue,
-                         'Return value from getPersonPreferences is not as expected')
+                         'Return value from _processReturnValue is not as expected')
 
 
 if __name__ == "__main__":

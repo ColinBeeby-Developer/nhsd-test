@@ -4,7 +4,7 @@ File contains classes and methods to interact with the PreferenceProvider API
 import ast
 import json
 
-import queryPreferenceProvider.swaggerClient 
+from queryPreferenceProvider.swaggerClient import Configuration, DefaultApi, ApiClient
 from queryPreferenceProvider.swaggerClient.rest import ApiException
 
 class QueryPreferenceProvider(object):
@@ -21,9 +21,9 @@ class QueryPreferenceProvider(object):
         Constructor
         '''
         self.logger = logger
-        configuration = queryPreferenceProvider.swaggerClient.Configuration()
+        configuration = Configuration()
         configuration.host = baseUrl
-        self.api_instance = queryPreferenceProvider.swaggerClient.DefaultApi(queryPreferenceProvider.swaggerClient.ApiClient(configuration))
+        self.api_instance = DefaultApi(ApiClient(configuration))
         
     def getPersonPreferences(self,
                              personId,
@@ -46,6 +46,15 @@ class QueryPreferenceProvider(object):
                     raise ApiException()
                 continue
             
+        return self._processReturnValue(personPreferences,
+                                        logDict)
+            
+    def _processReturnValue(self,
+                            personPreferences,
+                            logDict):
+        '''
+        Process the returned person preferences into a return value
+        '''
         self.logger.log('CLEANER0010',
                         logDict)
         try:

@@ -6,9 +6,16 @@ import unittest
 import integrationTests.swaggerClient 
 from integrationTests.swaggerClient.rest import ApiException
 
-PERSON_ID_OBFUSCATE = '0001'
-PERSON_ID_NO_OBFUSCATE = '0002'
-PERSON_ID_ERROR = '0003'
+LOG_POINT_1 = 'CLEANER0001 - DataCleaner API POST has been called internalID='
+LOG_POINT_2 = 'CLEANER0002 - DataCleaner API POST has completed internalID='
+LOG_POINT_3 = 'CLEANER0003 - DataCleaner API POST aborting with Gateway Timeout internalID='
+LOG_POINT_4 = 'CLEANER0004 - DataCleaner module has acquired the preferences for {} internalID='
+LOG_POINT_5 = 'CLEANER0005 - DataCleaner module has performed any required operations for {} internalID='
+LOG_POINT_6 = 'CLEANER0006 - DataCleaner API POST aborting with Bad Request internalID='
+LOG_POINT_7 = 'CLEANER0007 - DataCleaner module failed to interpret the request data internalID='
+LOG_POINT_9 = 'CLEANER0009 - DataCleaner Preference Provider attempting to get preferences attempt={} internalID='
+LOG_POINT_10 = 'CLEANER0010 - DataCleaner Preference Provider returning preference data internalID='
+LOG_POINT_11 = 'CLEANER0011 - DataCleaner Preference Provider failed to get preferences internalID='
 
 
 class TestDataCleanerAPI(unittest.TestCase):
@@ -30,13 +37,12 @@ class TestDataCleanerAPI(unittest.TestCase):
         '''
         inputData = '{"rowId": 1, "id": "0001", "favouriteColour": "red"}'
         expectedReturn = '{"rowId": 1, "id": "74327ebb14", "favouriteColour": "red"}'
-        messagesToFind = ['CLEANER0001 - DataCleaner API POST has been called internalID=',
-                          'CLEANER0002 - DataCleaner API POST has completed internalID=',  
-                          'CLEANER0004 - DataCleaner module has acquired the preferences for 0001 internalID=',
-                          'CLEANER0005 - DataCleaner module has performed any required operations for 0001 internalID=',
-                          'CLEANER0009 - DataCleaner Preference Provider attempting to get preferences attempt=0 internalID=',
-                          'CLEANER0010 - DataCleaner Preference Provider returning preference data internalID='
-                          ]
+        messagesToFind = [LOG_POINT_1,
+                          LOG_POINT_2,
+                          LOG_POINT_4.format('0001'),
+                          LOG_POINT_5.format('0001'),
+                          LOG_POINT_9.format('0'),
+                          LOG_POINT_10]
         
         self._postDataAndCheckResult(inputData,
                                      expectedReturn,
@@ -49,13 +55,12 @@ class TestDataCleanerAPI(unittest.TestCase):
         '''
         inputData = '{"rowId": 2, "id": "0002", "favouriteColour": "green"}'
         expectedReturn = '{"rowId": 2, "id": "0002", "favouriteColour": "green"}'
-        messagesToFind = ['CLEANER0001 - DataCleaner API POST has been called internalID=',
-                          'CLEANER0002 - DataCleaner API POST has completed internalID=',  
-                          'CLEANER0004 - DataCleaner module has acquired the preferences for 0002 internalID=',
-                          'CLEANER0005 - DataCleaner module has performed any required operations for 0002 internalID=',
-                          'CLEANER0009 - DataCleaner Preference Provider attempting to get preferences attempt=0 internalID=',
-                          'CLEANER0010 - DataCleaner Preference Provider returning preference data internalID='
-                          ]
+        messagesToFind = [LOG_POINT_1,
+                          LOG_POINT_2,
+                          LOG_POINT_4.format('0002'),
+                          LOG_POINT_5.format('0002'),
+                          LOG_POINT_9.format('0'),
+                          LOG_POINT_10]
         
         self._postDataAndCheckResult(inputData,
                                      expectedReturn,
@@ -70,13 +75,12 @@ class TestDataCleanerAPI(unittest.TestCase):
         inputData = '{"rowId": 3, "id": "0003", "favouriteColour": "blue"}'
         expectedReturn = '{"rowId": 3, "id": "0003", "favouriteColour": "blue"}'
         expectedHttpCode = '504'
-        messagesToFind = ['CLEANER0001 - DataCleaner API POST has been called internalID=',
-                          'CLEANER0009 - DataCleaner Preference Provider attempting to get preferences attempt=0 internalID=',
-                          'CLEANER0009 - DataCleaner Preference Provider attempting to get preferences attempt=1 internalID=',
-                          'CLEANER0009 - DataCleaner Preference Provider attempting to get preferences attempt=2 internalID=',
-                          'CLEANER0011 - DataCleaner Preference Provider failed to get preferences internalID=',
-                          'CLEANER0003 - DataCleaner API POST aborting with Gateway Timeout internalID='
-                          ]
+        messagesToFind = [LOG_POINT_1,
+                          LOG_POINT_9.format('0'),
+                          LOG_POINT_9.format('1'),
+                          LOG_POINT_9.format('2'),
+                          LOG_POINT_11,
+                          LOG_POINT_3]
         
         with self.assertRaises(ApiException) as context:
             self._postDataAndCheckResult(inputData,
@@ -98,10 +102,10 @@ class TestDataCleanerAPI(unittest.TestCase):
         inputData = 'not json'
         expectedReturn = ''
         expectedHttpCode = '400'
-        messagesToFind = ['CLEANER0001 - DataCleaner API POST has been called internalID=',
-                          'CLEANER0007 - DataCleaner module failed to interpret the request data internalID=',
-                          'CLEANER0006 - DataCleaner API POST aborting with Bad Request internalID'
-                          ]
+        messagesToFind = [LOG_POINT_1,
+                          LOG_POINT_7,
+                          LOG_POINT_6]
+
         # when 
         with self.assertRaises(ApiException) as context:
             self._postDataAndCheckResult(inputData,
