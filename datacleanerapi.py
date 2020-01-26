@@ -4,10 +4,11 @@ This file contains classes and methods to expose the DataCleaner API
 from __future__ import print_function
 from flask import Flask
 from flask_restplus import Resource, Api, abort
+import uuid
 
 from dataCleaner.datacleaner import DataCleaner
 from queryPreferenceProvider.querypreferenceprovider import QueryPreferenceProvider
-from integrationTests.swaggerClient.rest import ApiException
+from cleanerLogging.logger import Logger
 
 
 app = Flask(__name__)
@@ -26,21 +27,34 @@ class DataCleanerApi(Resource):
         '''
         Constructor
         '''
-        queryProvider = QueryPreferenceProvider()
-        self.dataCleaner = DataCleaner(queryProvider)
-    
+        self.logger = Logger()
+        queryProvider = QueryPreferenceProvider(self.logger)
+        self.dataCleaner = DataCleaner(self.logger,
+                                       queryProvider)
     
     def post(self, personData):
         '''
         Post data for cleansing
         '''
+        internalID = uuid.uuid4()
+        logDict = {'internalID': internalID}
         try:
-            cleanedData = self.dataCleaner.cleanData(personData)
+            self.logger.log('CLEANER0001',
+                            logDict)
+            cleanedData = self.dataCleaner.cleanData(personData,
+                                                     logDict)
+        except ValueError:
+            self.logger.log('CLEANER0006',
+                            logDict)
+            abort(400)
         except Exception:
+            self.logger.log('CLEANER0003',
+                            logDict)
             abort(504)
-        
+        self.logger.log('CLEANER0002',
+                        logDict)
         return cleanedData
 
 if __name__ == '__main__':
-    app.run(port=5000)
+    app.run(host='0.0.0.0', port=5000)
     

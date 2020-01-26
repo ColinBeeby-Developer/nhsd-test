@@ -2,41 +2,50 @@
 File contains classes and methods to cleanse data
 '''
 import json
-from integrationTests.swaggerClient.rest import ApiException
-from flask_restplus import abort
 
 class DataCleaner(object):
     '''
     Class provides methods which clean data
     '''
 
-    def __init__(self, queryProvider):
+    def __init__(self,
+                 logger,
+                 queryProvider):
         '''
         Constructor
         '''
+        self.logger = logger
         self.queryProvider = queryProvider
         
-    def cleanData(self, data):
+    def cleanData(self,
+                  data,
+                  logDict):
         '''
         Method to return the provided data, cleansed
         '''
         try:
             dataDict = json.loads(data)
-        except ValueError as e:
-            print('need to log this')
-            return 'Something when wrong'
+        except ValueError:
+            self.logger.log('CLEANER0007',
+                            logDict)
+            raise ValueError
         
-        # TODO check that the data id is present (and in correct format)
+        if not dataDict.get('id'):
+            self.logger.log('CLEANER0008',
+                            logDict)
+            raise ValueError
         
-        # get the id out of the data
-#         try:
-        personPreferences = self.queryProvider.getPersonPreferences(dataDict['id'])
-#         except ApiException:
-#             abort(504, 'Gateway Timeout')
+        personPreferences = self.queryProvider.getPersonPreferences(dataDict['id'],
+                                                                    logDict)
+        logDict['id'] = dataDict['id']
+        self.logger.log('CLEANER0004',
+                        logDict)
         
         # obfuscate the id if required
         if personPreferences.get('patientPreference', '') == 'OBFUSCATE_ID':
             dataDict['id'] = personPreferences.get('newId', '')
+        self.logger.log('CLEANER0005',
+                        logDict)
         
         return json.dumps(dataDict)
     
