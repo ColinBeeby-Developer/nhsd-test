@@ -25,7 +25,7 @@ class TestDataCleanerAPI(unittest.TestCase):
         configuration = integrationTests.swaggerClient.Configuration()
         configuration.host = 'http://127.0.0.1:5000'
         self.api_instance = integrationTests.swaggerClient.DefaultApi(integrationTests.swaggerClient.ApiClient(configuration))
-        self.logFile = open('/tmp/log.txt', 'a+')
+        self.logFile = open('log.txt', 'a+')
     
     def tearDown(self):
         self.logFile.close()
